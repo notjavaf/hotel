@@ -153,7 +153,7 @@ bool operator< (my_time t1, my_time t2){
     return false;
 }
 
-my_time operator++ (my_time t1){
+my_time operator++ (my_time& t1){
     if (t1.hour > 17){
         t1.day++;
         t1.hour = (t1.hour + 6) % 24;
@@ -364,9 +364,7 @@ void experiment::complete_one_step(){
     
 void experiment::complete_all_steps(){
     my_time start_time = cur_time;
-    my_time end_time = my_time(0, M);
-    for (my_time cur_time = start_time;
-        cur_time < end_time;)
+    for (int i = 0; i < M - start_time.day; i++)
         complete_one_step();
 }
 
@@ -374,6 +372,13 @@ ostream& operator<< (ostream& o, const map<comfort, int> &a){
     for (const auto& g: a){
         cout << comfort_to_string(g.first) << ": " << g.second << endl; 
     }
+}
+
+void print_cur_res(experiment& exp){
+    cout << exp.get_num_of_completed_requests() << " " 
+         << exp.get_num_of_unfulfilled_requests() << endl;
+    cout << exp.get_num_of_completed_requests_by_rooms();
+    cout << "revenue = " << exp.get_cur_revenue() << endl;
 }
 
 //дополнительные классы для sfml 
@@ -387,14 +392,8 @@ int main()
                             {comfort::two_seat, 5},
                             {comfort::one_seat, 5}};
     int M = 15, K = 25;
+    bool f = true;
     experiment exp(M, K, a);
-    for (int i = 0; i < M; i++){
-        exp.complete_one_step();
-    }
-    cout << exp.get_num_of_completed_requests() << " " 
-         << exp.get_num_of_unfulfilled_requests() << endl;
-    cout << exp.get_num_of_completed_requests_by_rooms();
-    cout << "revenue = " << exp.get_cur_revenue() << endl;
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hotel");
     sf::Texture TextureExitButton, TextureOneStepButton, TextureAllStepsButton;
@@ -404,16 +403,40 @@ int main()
     sf::Sprite ExitButton(TextureExitButton), 
                OneStepButton(TextureOneStepButton), 
                AllStepsButton(TextureAllStepsButton);
-    ExitButton.setPosition(10, 10);
-    while (window.isOpen())
-    {
+    ExitButton.setPosition(130, 560);
+    OneStepButton.setPosition(330, 560);
+    AllStepsButton.setPosition(530, 560);
+    while (window.isOpen()){
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)){
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::MouseButtonPressed){
+                if (event.mouseButton.button == sf::Mouse::Left){
+                    if (sf::IntRect(130, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
+                        window.close(); 
+                    }
+                    if (sf::IntRect(330, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
+                        exp.complete_one_step();  
+                        print_cur_res(exp); 
+                        my_time cur_time = exp.get_cur_time();
+                        if (cur_time.day >= M)
+                            f = false;
+                    }
+                    if (sf::IntRect(530, 560, 180, 32).contains(sf::Mouse::getPosition(window))){ 
+                        exp.complete_all_steps();  
+                        print_cur_res(exp); 
+                        f = false;
+                    }
+                }
+            }
         }   
         window.clear(sf::Color(220, 220, 220, 255));
+        window.draw(ExitButton);
+        if (f){
+            window.draw(OneStepButton);
+            window.draw(AllStepsButton);
+        }
         window.display();
     }
 	
