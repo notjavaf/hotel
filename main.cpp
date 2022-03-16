@@ -40,7 +40,7 @@ class hotel{
     int num_of_completed_requests;
     int num_of_unfulfilled_requests;
     map <comfort, int> num_of_completed_requests_by_rooms;
-    map <comfort, vector <pair <pair <my_time, my_time>, room> > > rooms;
+    map <comfort, vector <pair <vector <pair <my_time, my_time> >, room> > > rooms;
 public:
     hotel(map <comfort, int> a);
     void book(comfort, my_time, my_time);
@@ -49,6 +49,7 @@ public:
     int get_num_of_unfulfilled_requests() const;
     map <comfort, int> get_num_of_completed_requests_by_rooms() const;
     int get_cur_revenue() const;
+    map <comfort, pair<int, int>> get_stats(my_time) const;
 };
 
 class book_request {
@@ -78,9 +79,11 @@ public:
     int get_num_of_unfulfilled_requests() const;
     map <comfort, int> get_num_of_completed_requests_by_rooms();
     int get_cur_revenue() const;
+    map <comfort, pair<int, int>> get_stats() const;
 };
 
 //определение методов классов и функций
+
 string comfort_to_string(comfort a){
     switch(a){
         case comfort::lux:
@@ -99,6 +102,28 @@ string comfort_to_string(comfort a){
             return "one_seat";
             break;
     }
+}
+
+string print_bool(bool c){
+    if (c)
+        return "true";
+    else
+        return "false";
+}
+
+ostream& operator<< (ostream& o, const map <comfort, vector <pair <vector <pair <my_time, my_time> >, room> > > &rooms){
+    for (const auto& g: rooms){
+        for (const auto &gg: g.second){
+            o << comfort_to_string(g.first) << "- "; 
+            for (const auto &ggg: gg.first)
+            o << ggg.first.day << ":"
+              << ggg.first.hour << " to " 
+              << ggg.second.day << ":" 
+              << ggg.second.hour << " ";
+            o << print_bool(gg.second.check_free()) << endl; 
+        }
+    }
+    return o;
 }
 
 comfort get_comf(int i){
@@ -174,13 +199,12 @@ int operator- (my_time t1, my_time t2){
 }
 
 my_time operator+ (my_time t1, my_time t2){
-    my_time res(t1.day + t2.day + (t1.hour + t2.hour) % 24, 
-               (t1.hour + t2.hour) % 24);
+    my_time res((t1.hour + t2.hour) % 24, t1.day + t2.day + (t1.hour + t2.hour) % 24);
     return res;
 }
 
 my_time operator+ (my_time t1, int h){
-    my_time res(t1.day + h, t1.hour);
+    my_time res(t1.hour, t1.day + h);
     return res;
 }
 
@@ -219,19 +243,19 @@ bool room::check_free() const{
         return free;
 }
 
-bool cross_time_interval(my_time st_t1, my_time f_t1, 
+bool cross_time_interval(const vector <pair <my_time, my_time> >& a, 
                          my_time st_t2, my_time f_t2){
-    if (st_t1 < st_t2 && st_t2 < f_t1 || st_t1 < f_t2 && f_t2 < f_t1)
-        return true;
-    else return false; 
+    for (const auto& g: a)
+        if (g.first < st_t2 && st_t2 < g.second || g.first < f_t2 && f_t2 < g.second)
+            return true;
+    return false; 
 }
 
 
 void hotel::update_info(my_time time_){
         for (auto time_room: rooms){
             for (auto my_rooms: time_room.second){
-                if (my_rooms.first.second < time_ || 
-                    time_ < my_rooms.first.first)
+                if (!cross_time_interval(my_rooms.first, time_, time_))
                     my_rooms.second.set_free();
                 else
                     my_rooms.second.take_a_room();
@@ -242,8 +266,7 @@ void hotel::update_info(my_time time_){
 void hotel::book(comfort comf, my_time time1, my_time time2){
         int k = -1;
         for (int i = 0; i < rooms[comf].size(); i++) {
-            if (!cross_time_interval(rooms[comf][i].first.first,
-                                     rooms[comf][i].first.second,
+            if (!cross_time_interval(rooms[comf][i].first,
                                      time1,
                                      time2)){
                 k = i;
@@ -251,17 +274,22 @@ void hotel::book(comfort comf, my_time time1, my_time time2){
             }
         }
         if (k != -1){
+            /*cout << rooms;
+            cout << "prinyatoe = " << comfort_to_string(comf)  << time1.day << ":" 
+                                                                 << time1.hour<< " - " 
+                                                                 << time2.day << ":" 
+                                                                 << time1.hour<< endl;*/
+
             cur_revenue += rooms[comf][k].second.take_a_room() *
                 (time2 - time1) / 24;
             num_of_completed_requests++;
             num_of_completed_requests_by_rooms[comf]++;
-            rooms[comf][k].first.first = time1;
-            rooms[comf][k].first.second = time2;
+            pair<my_time, my_time> t_time = {time1, time2};
+            rooms[comf][k].first.push_back(t_time);
         } else if (comf != comfort::one_seat){
             comf = get_prev_comfort(comf);
             for (int i = 0; i < rooms[comf].size(); i++) {
-                if (!cross_time_interval(rooms[comf][i].first.first,
-                                         rooms[comf][i].first.second,
+                if (!cross_time_interval(rooms[comf][i].first,
                                          time1,
                                          time2)){
                     k = i;
@@ -273,12 +301,18 @@ void hotel::book(comfort comf, my_time time1, my_time time2){
                     (time2 - time1) / 24 * 70 / 100;
                 num_of_completed_requests++;
                 num_of_completed_requests_by_rooms[comf]++;
-                rooms[comf][k].first.first = time1;
-                rooms[comf][k].first.second = time2;
+                pair<my_time, my_time> t_time = {time1, time2};
+                rooms[comf][k].first.push_back(t_time);
             }
         }
         if (k == -1){
+            /*cout << rooms;
+            cout << "neprinyatoe = " << comfort_to_string(comf)  << time1.day << ":" 
+                                                                 << time1.hour<< " - " 
+                                                                 << time2.day << ":" 
+                                                                 << time1.hour<< endl;*/
             num_of_unfulfilled_requests++;
+
         }
 }
 
@@ -290,10 +324,12 @@ hotel::hotel(map <comfort, int> a){
         num_of_completed_requests_by_rooms[get_comf(i)] = 0;
     }
     for (auto g: a){
-        rooms[g.first].push_back(pair<pair<my_time, my_time>, room>
-                                (pair<my_time, my_time>
-                                (my_time(-1, -1), my_time(-1, -1)),
-                                 room(g.first, g.first)));
+        for (int i = 0; i < g.second; i++){
+            vector <pair <my_time, my_time> > a;
+            room b = room(g.first, g.first);
+            pair<vector <pair <my_time, my_time> >, room> c = {a, b};
+            rooms[g.first].push_back(c);
+        }
     }
 }
 
@@ -310,6 +346,18 @@ map <comfort, int> hotel::get_num_of_completed_requests_by_rooms() const{
 }
 int hotel::get_cur_revenue() const{
     return cur_revenue;
+}
+
+map <comfort, pair<int, int>> hotel::get_stats(my_time time_) const{
+    map <comfort, pair<int, int>> a;
+    for (auto time_room: rooms){
+        a[time_room.first] = {0, rooms.at(time_room.first).size()};
+        bool f = false;
+        for (auto my_rooms: time_room.second)
+            if (!my_rooms.second.check_free())
+                a[time_room.first].first++;
+    }
+    return a;
 }
 
 int experiment::get_num_of_completed_requests() const{
@@ -362,6 +410,8 @@ void experiment::complete_one_step(){
         req.form(my_hotel);
     }
     my_hotel.update_info(cur_time);
+    ///////////////////////
+    //cout << cur_time.day << ":" << cur_time.hour << endl;
 }
     
 void experiment::complete_all_steps(){
@@ -370,10 +420,22 @@ void experiment::complete_all_steps(){
         complete_one_step();
 }
 
+map <comfort, pair<int, int>> experiment::get_stats() const{
+    return my_hotel.get_stats(cur_time);
+}
+
 ostream& operator<< (ostream& o, const map<comfort, int> &a){
     for (const auto& g: a){
-        cout << comfort_to_string(g.first) << ": " << g.second << endl; 
+        o << comfort_to_string(g.first) << ": " << g.second << endl; 
     }
+    return o;
+}
+
+ostream& operator<< (ostream& o, const map<comfort, pair <int, int> > &a){
+    for (const auto& g: a){
+        o << comfort_to_string(g.first) << ": " << g.second.first << " из " <<  g.second.second << endl; 
+    }
+    return o;
 }
 
 void print_cur_res(experiment& exp){
@@ -381,6 +443,7 @@ void print_cur_res(experiment& exp){
          << exp.get_num_of_unfulfilled_requests() << endl;
     cout << exp.get_num_of_completed_requests_by_rooms();
     cout << "revenue = " << exp.get_cur_revenue() << endl;
+    cout << exp.get_stats();
 }
 
 //дополнительные классы для sfml 
@@ -393,7 +456,7 @@ int main()
                             {comfort::two_seat_sofa, 5},
                             {comfort::two_seat, 5},
                             {comfort::one_seat, 5}};
-    int M = 2, K = 25;
+    int M = 10, K = 25;
     bool f = true;
     experiment exp(M, K, a);
     while(1){
@@ -406,8 +469,8 @@ int main()
             print_cur_res(exp);
             break;    
         default:
-            //exp.complete_all_steps();
-            //print_cur_res(exp);
+            exp.complete_all_steps();
+            print_cur_res(exp);
             break;
         }
     }
