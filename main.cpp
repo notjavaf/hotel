@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -31,7 +31,7 @@ class room{
 public:
     room(comfort comf_, int cost_);
     int take_a_room();
-    bool check_free();
+    bool check_free() const;
     void set_free();
 };
 
@@ -45,10 +45,10 @@ public:
     hotel(map <comfort, int> a);
     void book(comfort, my_time, my_time);
     void update_info(my_time time_);
-    int get_num_of_completed_requests();
-    int get_num_of_unfulfilled_requests();
-    map <comfort, int> get_num_of_completed_requests_by_rooms();
-    int get_cur_revenue();
+    int get_num_of_completed_requests() const;
+    int get_num_of_unfulfilled_requests() const;
+    map <comfort, int> get_num_of_completed_requests_by_rooms() const;
+    int get_cur_revenue() const;
 };
 
 class book_request {
@@ -57,9 +57,9 @@ class book_request {
     my_time time2;
 public:
     book_request(comfort comf_, my_time time1_, my_time time2_);
-    comfort get_comfort();
-    my_time get_time1();
-    my_time get_time2();
+    comfort get_comfort() const;
+    my_time get_time1() const;
+    my_time get_time2() const;
     void form(hotel&);
 };
 
@@ -71,13 +71,13 @@ class experiment{
     int random_variable;
 public:
     experiment(int M_, int K_, map <comfort, int> a);
-    my_time get_cur_time();
+    my_time get_cur_time() const;
     void complete_one_step();
     void complete_all_steps();
-    int get_num_of_completed_requests();
-    int get_num_of_unfulfilled_requests();
+    int get_num_of_completed_requests() const;
+    int get_num_of_unfulfilled_requests() const;
     map <comfort, int> get_num_of_completed_requests_by_rooms();
-    int get_cur_revenue();
+    int get_cur_revenue() const;
 };
 
 //определение методов классов и функций
@@ -127,15 +127,15 @@ book_request::book_request(comfort comf_, my_time time1_, my_time time2_):
         time1(time1_),
         time2(time2_){}
 
-comfort book_request::get_comfort(){
+comfort book_request::get_comfort() const{
         return comf;
 }
 
-my_time book_request::get_time1(){
+my_time book_request::get_time1() const{
         return time1;
 }
 
-my_time book_request::get_time2(){
+my_time book_request::get_time2() const{
         return time2;
 }
 
@@ -153,7 +153,7 @@ bool operator< (my_time t1, my_time t2){
     return false;
 }
 
-my_time operator++ (my_time& t1){
+my_time& operator++ (my_time& t1){
     if (t1.hour > 17){
         t1.day++;
         t1.hour = (t1.hour + 6) % 24;
@@ -209,11 +209,13 @@ void room::set_free(){
 room::room(comfort comf_, int cost_): comf(comf_),  
                                     cost(cost_),
                                     free(true){}
+
 int room::take_a_room(){
         free = false;
         return cost;
 }
-bool room::check_free(){
+
+bool room::check_free() const{
         return free;
 }
 
@@ -295,26 +297,26 @@ hotel::hotel(map <comfort, int> a){
     }
 }
 
-int hotel::get_num_of_completed_requests(){
+int hotel::get_num_of_completed_requests() const{
     return num_of_completed_requests;
 }
     
-int hotel::get_num_of_unfulfilled_requests(){
+int hotel::get_num_of_unfulfilled_requests() const{
     return num_of_unfulfilled_requests;
 }
     
-map <comfort, int> hotel::get_num_of_completed_requests_by_rooms(){
+map <comfort, int> hotel::get_num_of_completed_requests_by_rooms() const{
     return num_of_completed_requests_by_rooms;
 }
-int hotel::get_cur_revenue(){
+int hotel::get_cur_revenue() const{
     return cur_revenue;
 }
 
-int experiment::get_num_of_completed_requests(){
+int experiment::get_num_of_completed_requests() const{
     return my_hotel.get_num_of_completed_requests();
 }
     
-int experiment::get_num_of_unfulfilled_requests(){
+int experiment::get_num_of_unfulfilled_requests() const{
     return my_hotel.get_num_of_unfulfilled_requests();
 }
     
@@ -322,7 +324,7 @@ map <comfort, int> experiment::get_num_of_completed_requests_by_rooms(){
     return my_hotel.get_num_of_completed_requests_by_rooms();
 }
 
-int experiment::get_cur_revenue(){
+int experiment::get_cur_revenue() const{
     return my_hotel.get_cur_revenue();
 }
 
@@ -334,7 +336,7 @@ experiment::experiment(int M_, int K_, map <comfort, int> a):
     random_variable(K_ / 6)
     {}
 
-my_time experiment::get_cur_time(){
+my_time experiment::get_cur_time() const{
     return cur_time;
 }
 
@@ -391,10 +393,25 @@ int main()
                             {comfort::two_seat_sofa, 5},
                             {comfort::two_seat, 5},
                             {comfort::one_seat, 5}};
-    int M = 15, K = 25;
+    int M = 2, K = 25;
     bool f = true;
     experiment exp(M, K, a);
-
+    while(1){
+        char c;
+        cin >> c;
+        switch (c)
+        {
+        case '1':
+            exp.complete_one_step();
+            print_cur_res(exp);
+            break;    
+        default:
+            //exp.complete_all_steps();
+            //print_cur_res(exp);
+            break;
+        }
+    }
+/*
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hotel");
     sf::Texture TextureExitButton, TextureOneStepButton, TextureAllStepsButton;
     TextureExitButton.loadFromFile("exit.png");
@@ -439,7 +456,7 @@ int main()
         }
         window.display();
     }
-	
+	*/
  
     return 0;
 }
