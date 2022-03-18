@@ -1,10 +1,13 @@
-//#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 #include <map>
 #include <cstdlib>
 #include <ctime>
 #include <random>
+#include <locale>
+#include <SFML/System/String.hpp>
+#include <SFML/System/Utf.hpp>
 
 using namespace std;
 
@@ -354,8 +357,8 @@ map <comfort, pair<int, int>> hotel::get_stats(my_time time_) const{
         a[time_room.first] = {0, rooms.at(time_room.first).size()};
         bool f = false;
         for (auto my_rooms: time_room.second)
-            if (!my_rooms.second.check_free())
-                a[time_room.first].first++;
+            if (cross_time_interval(my_rooms.first, time_, time_))
+                    a[time_room.first].first++;
     }
     return a;
 }
@@ -446,6 +449,13 @@ void print_cur_res(experiment& exp){
     cout << exp.get_stats();
 }
 
+void set_param_to_text(sf::Text& text, sf::Font& font, int x, int y, int size, sf::Color col){
+    text.setFont(font);
+    text.setPosition(x, y);
+    text.setCharacterSize(size);
+    text.setColor(col);
+}
+
 //дополнительные классы для sfml 
 
 int main()
@@ -459,7 +469,7 @@ int main()
     int M = 10, K = 25;
     bool f = true;
     experiment exp(M, K, a);
-    while(1){
+    /*while(1){
         char c;
         cin >> c;
         switch (c)
@@ -473,10 +483,16 @@ int main()
             print_cur_res(exp);
             break;
         }
-    }
-/*
+    }*/
+    setlocale(LC_CTYPE, "rus");
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hotel");
     sf::Texture TextureExitButton, TextureOneStepButton, TextureAllStepsButton;
+    sf::Font font;
+    font.loadFromFile("arial.ttf");
+    sf::Text text1;
+    string s = "Текущие дата и время"; 
+    text1.setString(sf::String::fromUtf8(s.begin(), s.end()));
+    set_param_to_text(text1, font, 600, 20, 16, sf::Color::Black);
     TextureExitButton.loadFromFile("exit.png");
     TextureOneStepButton.loadFromFile("one_step.png");
     TextureAllStepsButton.loadFromFile("n_steps.png");
@@ -493,20 +509,23 @@ int main()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed){
                 if (event.mouseButton.button == sf::Mouse::Left){
+                    
                     if (sf::IntRect(130, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
                         window.close(); 
                     }
-                    if (sf::IntRect(330, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
-                        exp.complete_one_step();  
-                        print_cur_res(exp); 
-                        my_time cur_time = exp.get_cur_time();
-                        if (cur_time.day >= M)
+                    if (f){
+                        if (sf::IntRect(330, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
+                            exp.complete_one_step();  
+                            print_cur_res(exp); 
+                            my_time cur_time = exp.get_cur_time();
+                            if (cur_time.day >= M)
+                                f = false;
+                        }
+                        if (sf::IntRect(530, 560, 180, 32).contains(sf::Mouse::getPosition(window))){ 
+                            exp.complete_all_steps();  
+                            print_cur_res(exp); 
                             f = false;
-                    }
-                    if (sf::IntRect(530, 560, 180, 32).contains(sf::Mouse::getPosition(window))){ 
-                        exp.complete_all_steps();  
-                        print_cur_res(exp); 
-                        f = false;
+                        }
                     }
                 }
             }
@@ -517,9 +536,10 @@ int main()
             window.draw(OneStepButton);
             window.draw(AllStepsButton);
         }
+        window.draw(text1);
         window.display();
     }
-	*/
+	
  
     return 0;
 }
