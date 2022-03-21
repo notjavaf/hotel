@@ -20,6 +20,11 @@ enum comfort {
 			  two_seat = 160, 
 			  one_seat = 100
 			 };
+    
+enum type_of_req {
+            book,
+            check_in
+};  
 
 struct my_time {
     int hour;
@@ -56,18 +61,21 @@ public:
 };
 
 class book_request {
+    type_of_req type_;
     comfort comf;
     my_time time1;
     my_time time2;
 public:
-    book_request(comfort comf_, my_time time1_, my_time time2_);
+    book_request(type_of_req _type, comfort comf_, my_time time1_, my_time time2_);
     comfort get_comfort() const;
     my_time get_time1() const;
     my_time get_time2() const;
+    type_of_req get_type() const;
     void form(hotel&);
 };
 
 class experiment{
+    vector<book_request> vec;
     hotel my_hotel;
     my_time cur_time;
     int M;
@@ -79,6 +87,7 @@ public:
     void complete_one_step();
     void complete_all_steps();
     int get_num_of_completed_requests() const;
+    vector <book_request> get_vec_of_book_requests() const;
     int get_num_of_unfulfilled_requests() const;
     map <comfort, int> get_num_of_completed_requests_by_rooms();
     int get_cur_revenue() const;
@@ -150,7 +159,8 @@ comfort get_comf(int i){
     }
 }
 
-book_request::book_request(comfort comf_, my_time time1_, my_time time2_):
+book_request::book_request(type_of_req _type, comfort comf_, my_time time1_, my_time time2_):
+        type_(_type),
         comf(comf_),
         time1(time1_),
         time2(time2_){}
@@ -383,7 +393,12 @@ int experiment::get_cur_revenue() const{
     return my_hotel.get_cur_revenue();
 }
 
+vector <book_request> experiment::get_vec_of_book_requests() const{
+    return vec;
+}
+
 experiment::experiment(int M_, int K_, map <comfort, int> a):
+    vec({}),
     my_hotel(a),
     M(M_),
     K(K_),
@@ -397,23 +412,28 @@ my_time experiment::get_cur_time() const{
 
 void experiment::complete_one_step(){
     ++cur_time;
+    vec.clear();
     my_hotel.update_info(cur_time);
     int rand_book_1 = rand() % random_variable;
     for (int i = 0; i < rand_book_1; i++){
         int rand_comf_1 = rand() % 5 + 1;
         int rand_days_1 = rand() % 3 + 1;
-        book_request req(get_comf(rand_comf_1), 
+        book_request req(type_of_req::check_in,
+                        get_comf(rand_comf_1), 
                          cur_time, 
                          cur_time + rand_days_1);
+        vec.push_back(req);
         req.form(my_hotel);
     }
     for (int i = 0; i < rand_book_1; i++){
         int rand_comf_1 = rand() % 5 + 1;
         int rand_days_1 = rand() % 3 + 1;
         int rand_days_2 = rand() % 3 + 1;
-        book_request req(get_comf(rand_comf_1), 
+        book_request req(type_of_req::book,
+                         get_comf(rand_comf_1), 
                          cur_time + rand_days_1, 
                          cur_time + rand_days_1 + rand_days_2);
+        vec.push_back(req);
         req.form(my_hotel);
     }
     my_hotel.update_info(cur_time);
@@ -562,6 +582,38 @@ int main()
 	set_param_to_text(text26, font, 390, 10, 16, sf::Color::Black);
 	set_param_to_text(text27, font, 242, 30, 16, sf::Color::Black);
 	set_param_to_text(text28, font, 370, 30, 16, sf::Color::Black);
+
+    sf::Vertex line3[] =
+	{
+    	sf::Vertex(sf::Vector2f(50, 380)),
+    	sf::Vertex(sf::Vector2f(500, 380))
+	};
+	line3[0].color = sf::Color::Black;
+    line3[1].color = sf::Color::Black;
+	sf::Vertex line4[] =
+	{
+    	sf::Vertex(sf::Vector2f(350, 350)),
+    	sf::Vertex(sf::Vector2f(350, 550))
+	};
+	line4[0].color = sf::Color::Black;
+    line4[1].color = sf::Color::Black;
+	sf::Vertex line5[] =
+	{
+    	sf::Vertex(sf::Vector2f(200, 350)),
+    	sf::Vertex(sf::Vector2f(200, 550))
+	};
+	line5[0].color = sf::Color::Black;
+    line5[1].color = sf::Color::Black;
+    string s21 = "тип заявки";
+	string s22 = "время заселения";
+	string s23 = "время выселения";
+    text39.setString(sf::String::fromUtf8(s21.begin(), s21.end()));
+	text40.setString(sf::String::fromUtf8(s22.begin(), s22.end()));
+	text41.setString(sf::String::fromUtf8(s23.begin(), s23.end()));
+    set_param_to_text(text39, font, 70, 347, 16, sf::Color::Black);
+	set_param_to_text(text40, font, 215, 347, 16, sf::Color::Black);
+	set_param_to_text(text41, font, 365, 347, 16, sf::Color::Black);
+
     TextureExitButton.loadFromFile("exit.png");
     TextureOneStepButton.loadFromFile("one_step.png");
     TextureAllStepsButton.loadFromFile("n_steps.png");
@@ -708,9 +760,15 @@ int main()
 		window.draw(text36);
 		window.draw(text37);
 		window.draw(text38);
+		window.draw(text39);
+		window.draw(text40);
+		window.draw(text41);
 		window.draw(line, 2, sf::Lines);
 		window.draw(line1, 2, sf::Lines);
 		window.draw(line2, 2, sf::Lines);
+		window.draw(line3, 2, sf::Lines);
+		window.draw(line4, 2, sf::Lines);
+		window.draw(line5, 2, sf::Lines);
         window.display();
     }
 	
