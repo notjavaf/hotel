@@ -201,6 +201,10 @@ int operator- (my_time t1, my_time t2){
     return (t1.day - t2.day) * 24 + t1.hour - t2.hour; 
 }
 
+int operator- (int i, my_time t2){
+    return (i - t2.day) * 4 - t2.hour/6; 
+}
+
 my_time operator+ (my_time t1, my_time t2){
     my_time res((t1.hour + t2.hour) % 24, t1.day + t2.day + (t1.hour + t2.hour) % 24);
     return res;
@@ -419,7 +423,7 @@ void experiment::complete_one_step(){
     
 void experiment::complete_all_steps(){
     my_time start_time = cur_time;
-    for (int i = 0; i < M - start_time.day; i++)
+    for (int i = 0; i < (M - start_time); i++)
         complete_one_step();
 }
 
@@ -456,7 +460,9 @@ void set_param_to_text(sf::Text& text, sf::Font& font, int x, int y, int size, s
     text.setColor(col);
 }
 
-//дополнительные классы для sfml 
+string time_to_string(my_time t){ 
+    return to_string(t.day + 1) + " д., " + to_string(t.hour) + " ч.";
+}
 
 int main()
 {
@@ -469,30 +475,93 @@ int main()
     int M = 10, K = 25;
     bool f = true;
     experiment exp(M, K, a);
-    /*while(1){
-        char c;
-        cin >> c;
-        switch (c)
-        {
-        case '1':
-            exp.complete_one_step();
-            print_cur_res(exp);
-            break;    
-        default:
-            exp.complete_all_steps();
-            print_cur_res(exp);
-            break;
-        }
-    }*/
     setlocale(LC_CTYPE, "rus");
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hotel");
     sf::Texture TextureExitButton, TextureOneStepButton, TextureAllStepsButton;
     sf::Font font;
     font.loadFromFile("arial.ttf");
-    sf::Text text1;
-    string s = "Текущие дата и время"; 
+    sf::Text text1, text2, text3, text4, text5, text6,
+	text7, text8, text9, text10, text11, text12, text13,
+	text14, text15, text16, text17, text18, text19, text20,
+	text21, text22, text23, text24, text25, text26, text27,
+	text28, text29, text30, text31, text32, text33, text34,
+	text35, text36, text37, text38, text39, text40, text41,
+	text42, text43, text44, text45, text46, text47, text48;	
+    string s  = "Текущие дата и время"; 
+	string s1 = "Всего выполнено заявок";
+	string s2 = "Невыполнено заявок";
+	string s3 = "Выполнено заявок";
+	string s4 = "по номерам";
+	string s5 = "Всего поступило заявок";
+	string s6 = "Текущая выручка";
     text1.setString(sf::String::fromUtf8(s.begin(), s.end()));
+	text3.setString(sf::String::fromUtf8(s1.begin(), s1.end()));
+	text4.setString(sf::String::fromUtf8(s2.begin(), s2.end()));
+	text5.setString(sf::String::fromUtf8(s3.begin(), s3.end()));
+	text6.setString(sf::String::fromUtf8(s4.begin(), s4.end()));
+	text7.setString(sf::String::fromUtf8(s5.begin(), s5.end()));
+	text16.setString(sf::String::fromUtf8(s6.begin(), s6.end()));
     set_param_to_text(text1, font, 600, 20, 16, sf::Color::Black);
+	set_param_to_text(text7, font, 595, 90, 16, sf::Color::Black);
+	set_param_to_text(text3, font, 595, 160, 16, sf::Color::Black);
+	set_param_to_text(text4, font, 610, 230, 16, sf::Color::Black);
+	set_param_to_text(text5, font, 620, 300, 16, sf::Color::Black);
+	set_param_to_text(text6, font, 650, 322, 16, sf::Color::Black);
+	set_param_to_text(text16, font, 620, 465, 16, sf::Color::Black);
+	sf::Vertex line[] =
+	{
+    	sf::Vertex(sf::Vector2f(200, 20)),
+    	sf::Vertex(sf::Vector2f(200, 300))
+	};
+	line[0].color = sf::Color::Black;
+    line[1].color = sf::Color::Black;
+	sf::Vertex line1[] =
+	{
+    	sf::Vertex(sf::Vector2f(350, 20)),
+    	sf::Vertex(sf::Vector2f(350, 300))
+	};
+	line1[0].color = sf::Color::Black;
+    line1[1].color = sf::Color::Black;
+	sf::Vertex line2[] =
+	{
+    	sf::Vertex(sf::Vector2f(50, 50)),
+    	sf::Vertex(sf::Vector2f(500, 50))
+	};
+	line2[0].color = sf::Color::Black;
+    line2[1].color = sf::Color::Black;
+	string s11 = "люкс";
+	string s12 = "полулюкс";
+	string s13 = "двухместные с";
+	string s10 = "раскладным диваном";
+	string s14 = "простые двухместные";
+	string s15 = "одноместные";
+	text18.setString(sf::String::fromUtf8(s11.begin(), s11.end()));
+	text19.setString(sf::String::fromUtf8(s12.begin(), s12.end()));
+	text20.setString(sf::String::fromUtf8(s13.begin(), s13.end()));
+	text21.setString(sf::String::fromUtf8(s14.begin(), s14.end()));
+	text22.setString(sf::String::fromUtf8(s15.begin(), s15.end()));
+	text23.setString(sf::String::fromUtf8(s10.begin(), s10.end()));
+	set_param_to_text(text18, font, 90, 65, 16, sf::Color::Black);
+	set_param_to_text(text19, font, 76, 112, 16, sf::Color::Black);
+	set_param_to_text(text20, font, 55, 159, 16, sf::Color::Black);
+	set_param_to_text(text21, font, 30, 206, 16, sf::Color::Black);
+	set_param_to_text(text22, font, 60, 253, 16, sf::Color::Black);
+	set_param_to_text(text23, font, 37, 173, 16, sf::Color::Black);
+	string s16 = "комфорт";
+	string s17 = "общее число";
+	string s18 = "занято в";
+	string s19 = "номеров";
+	string s20 = "данный момент";
+	text24.setString(sf::String::fromUtf8(s16.begin(), s16.end()));
+	text25.setString(sf::String::fromUtf8(s17.begin(), s17.end()));
+	text26.setString(sf::String::fromUtf8(s18.begin(), s18.end()));
+	text27.setString(sf::String::fromUtf8(s19.begin(), s19.end()));
+	text28.setString(sf::String::fromUtf8(s20.begin(), s20.end()));
+	set_param_to_text(text24, font, 76, 20, 16, sf::Color::Black);
+	set_param_to_text(text25, font, 227, 10, 16, sf::Color::Black);
+	set_param_to_text(text26, font, 390, 10, 16, sf::Color::Black);
+	set_param_to_text(text27, font, 242, 30, 16, sf::Color::Black);
+	set_param_to_text(text28, font, 370, 30, 16, sf::Color::Black);
     TextureExitButton.loadFromFile("exit.png");
     TextureOneStepButton.loadFromFile("one_step.png");
     TextureAllStepsButton.loadFromFile("n_steps.png");
@@ -516,20 +585,85 @@ int main()
                     if (f){
                         if (sf::IntRect(330, 560, 100, 32).contains(sf::Mouse::getPosition(window))){ 
                             exp.complete_one_step();  
-                            print_cur_res(exp); 
+                            //print_cur_res(exp); 
                             my_time cur_time = exp.get_cur_time();
                             if (cur_time.day >= M)
                                 f = false;
                         }
                         if (sf::IntRect(530, 560, 180, 32).contains(sf::Mouse::getPosition(window))){ 
                             exp.complete_all_steps();  
-                            print_cur_res(exp); 
+                            //print_cur_res(exp); 
                             f = false;
                         }
                     }
                 }
             }
         }   
+		string s_cur_time = time_to_string(exp.get_cur_time());
+		text2.setString(sf::String::fromUtf8(s_cur_time.begin(), s_cur_time.end()));
+		set_param_to_text(text2, font, 650, 45, 16, sf::Color::Black);
+		string all_req = to_string(exp.get_num_of_completed_requests()+exp.get_num_of_unfulfilled_requests());
+		text8.setString(sf::String::fromUtf8(all_req.begin(), all_req.end()));
+		set_param_to_text(text8, font, 675, 115, 16, sf::Color::Black);
+		string all_req1 = to_string(exp.get_num_of_completed_requests());
+		text9.setString(sf::String::fromUtf8(all_req1.begin(), all_req1.end()));
+		set_param_to_text(text9, font, 675, 185, 16, sf::Color::Black);
+		string all_req2 = to_string(exp.get_num_of_unfulfilled_requests());
+		text10.setString(sf::String::fromUtf8(all_req2.begin(), all_req2.end()));
+		set_param_to_text(text10, font, 675, 255, 16, sf::Color::Black);
+
+		map<comfort, int> star_c_r = exp.get_num_of_completed_requests_by_rooms();
+		string r1 = "люкс: " + to_string(star_c_r[comfort::lux]);
+		text11.setString(sf::String::fromUtf8(r1.begin(), r1.end()));
+		set_param_to_text(text11, font, 670, 350, 16, sf::Color::Black);
+		string r2 = "полулюкс: " + to_string(star_c_r[comfort::semi_lux]);
+		text12.setString(sf::String::fromUtf8(r2.begin(), r2.end()));
+		set_param_to_text(text12, font, 636, 370, 16, sf::Color::Black);
+		string r3 = "2-мест. с див.: " + to_string(star_c_r[comfort::two_seat_sofa]);
+		text13.setString(sf::String::fromUtf8(r3.begin(), r3.end()));
+		set_param_to_text(text13, font, 604, 390, 16, sf::Color::Black);
+		string r4 = "прост. 2-мест.: " + to_string(star_c_r[comfort::two_seat]);
+		text14.setString(sf::String::fromUtf8(r4.begin(), r4.end()));
+		set_param_to_text(text14, font, 600, 410, 16, sf::Color::Black);
+		string r5 = "1-мест: " + to_string(star_c_r[comfort::one_seat]);
+		text15.setString(sf::String::fromUtf8(r5.begin(), r5.end()));
+		set_param_to_text(text15, font, 655, 430, 16, sf::Color::Black);
+		string s_cur_rev = to_string(exp.get_cur_revenue());
+		text17.setString(sf::String::fromUtf8(s_cur_rev.begin(), s_cur_rev.end()));
+		set_param_to_text(text17, font, 660, 490, 16, sf::Color::Black);
+
+		map <comfort, pair<int, int> > stat_rooms = exp.get_stats();
+		string r11 = to_string(stat_rooms[comfort::lux].second);
+		text29.setString(sf::String::fromUtf8(r11.begin(), r11.end()));
+		set_param_to_text(text29, font, 265, 65, 16, sf::Color::Black);
+		string r12 = to_string(stat_rooms[comfort::semi_lux].second);
+		text30.setString(sf::String::fromUtf8(r12.begin(), r12.end()));
+		set_param_to_text(text30, font, 265, 112, 16, sf::Color::Black);
+		string r13 = to_string(stat_rooms[comfort::two_seat_sofa].second);
+		text31.setString(sf::String::fromUtf8(r13.begin(), r13.end()));
+		set_param_to_text(text31, font, 265, 159, 16, sf::Color::Black);
+		string r14 = to_string(stat_rooms[comfort::two_seat].second);
+		text32.setString(sf::String::fromUtf8(r14.begin(), r14.end()));
+		set_param_to_text(text32, font, 265, 206, 16, sf::Color::Black);
+		string r15 = to_string(stat_rooms[comfort::one_seat].second);
+		text33.setString(sf::String::fromUtf8(r15.begin(), r15.end()));
+		set_param_to_text(text33, font, 265, 253, 16, sf::Color::Black);
+		string r16 = to_string(stat_rooms[comfort::lux].first);
+		text34.setString(sf::String::fromUtf8(r16.begin(), r16.end()));
+		set_param_to_text(text34, font, 415, 65, 16, sf::Color::Black);
+		string r17 = to_string(stat_rooms[comfort::semi_lux].first);
+		text35.setString(sf::String::fromUtf8(r17.begin(), r17.end()));
+		set_param_to_text(text35, font, 415, 112, 16, sf::Color::Black);
+		string r18 = to_string(stat_rooms[comfort::two_seat_sofa].first);
+		text36.setString(sf::String::fromUtf8(r18.begin(), r18.end()));
+		set_param_to_text(text36, font, 415, 159, 16, sf::Color::Black);
+		string r19 = to_string(stat_rooms[comfort::two_seat].first);
+		text37.setString(sf::String::fromUtf8(r19.begin(), r19.end()));
+		set_param_to_text(text37, font, 415, 206, 16, sf::Color::Black);
+		string r20 = to_string(stat_rooms[comfort::one_seat].first);
+		text38.setString(sf::String::fromUtf8(r20.begin(), r20.end()));
+		set_param_to_text(text38, font, 415, 253, 16, sf::Color::Black);
+
         window.clear(sf::Color(220, 220, 220, 255));
         window.draw(ExitButton);
         if (f){
@@ -537,6 +671,46 @@ int main()
             window.draw(AllStepsButton);
         }
         window.draw(text1);
+		window.draw(text2);
+		window.draw(text3);
+		window.draw(text4);
+		window.draw(text5);
+		window.draw(text6);
+		window.draw(text7);
+		window.draw(text8);
+		window.draw(text9);
+		window.draw(text10);
+		window.draw(text11);
+		window.draw(text12);
+		window.draw(text13);
+		window.draw(text14);
+		window.draw(text15);
+		window.draw(text16);
+		window.draw(text17);
+		window.draw(text18);
+		window.draw(text19);
+		window.draw(text20);
+		window.draw(text21);
+		window.draw(text22);
+		window.draw(text23);
+		window.draw(text24);
+		window.draw(text25);
+		window.draw(text26);
+		window.draw(text27);
+		window.draw(text28);
+		window.draw(text29);
+		window.draw(text30);
+		window.draw(text31);
+		window.draw(text32);
+		window.draw(text33);
+		window.draw(text34);
+		window.draw(text35);
+		window.draw(text36);
+		window.draw(text37);
+		window.draw(text38);
+		window.draw(line, 2, sf::Lines);
+		window.draw(line1, 2, sf::Lines);
+		window.draw(line2, 2, sf::Lines);
         window.display();
     }
 	
