@@ -116,6 +116,26 @@ string comfort_to_string(comfort a){
     }
 }
 
+string comfort_to_string1(comfort a){
+    switch(a){
+        case comfort::lux:
+            return "люкс";
+            break;
+        case comfort::semi_lux:
+            return "полулюкс";
+            break;
+        case comfort::two_seat_sofa:
+            return "2-мест. с див.";
+            break;
+        case comfort::two_seat:
+            return "прост. 2-мест.";
+            break;
+        default:
+            return "1-местный";
+            break;
+    }
+}
+
 string print_bool(bool c){
     if (c)
         return "true";
@@ -175,6 +195,10 @@ my_time book_request::get_time1() const{
 
 my_time book_request::get_time2() const{
         return time2;
+}
+
+type_of_req book_request::get_type() const{
+    return type_;
 }
 
 void book_request::form(hotel& my_hotel){
@@ -425,7 +449,8 @@ void experiment::complete_one_step(){
         vec.push_back(req);
         req.form(my_hotel);
     }
-    for (int i = 0; i < rand_book_1; i++){
+    int rand_book_2 = rand() % random_variable;
+    for (int i = 0; i < rand_book_2; i++){
         int rand_comf_1 = rand() % 5 + 1;
         int rand_days_1 = rand() % 3 + 1;
         int rand_days_2 = rand() % 3 + 1;
@@ -484,6 +509,13 @@ string time_to_string(my_time t){
     return to_string(t.day + 1) + " д., " + to_string(t.hour) + " ч.";
 }
 
+string type_of_req_to_string(type_of_req a){
+    if (a == type_of_req::book)
+        return "бронирование";
+    else   
+        return "заселение";
+}
+
 int main()
 {
     srand(time(0));
@@ -506,7 +538,8 @@ int main()
 	text21, text22, text23, text24, text25, text26, text27,
 	text28, text29, text30, text31, text32, text33, text34,
 	text35, text36, text37, text38, text39, text40, text41,
-	text42, text43, text44, text45, text46, text47, text48;	
+	text42, text43, text44, text45, text46, text47, text48,
+    text49, text50, text51, text52, text53, text54, text55;	
     string s  = "Текущие дата и время"; 
 	string s1 = "Всего выполнено заявок";
 	string s2 = "Невыполнено заявок";
@@ -585,34 +618,44 @@ int main()
 
     sf::Vertex line3[] =
 	{
-    	sf::Vertex(sf::Vector2f(50, 380)),
-    	sf::Vertex(sf::Vector2f(500, 380))
+    	sf::Vertex(sf::Vector2f(30, 380)),
+    	sf::Vertex(sf::Vector2f(520, 380))
 	};
 	line3[0].color = sf::Color::Black;
     line3[1].color = sf::Color::Black;
 	sf::Vertex line4[] =
 	{
-    	sf::Vertex(sf::Vector2f(350, 350)),
-    	sf::Vertex(sf::Vector2f(350, 550))
+    	sf::Vertex(sf::Vector2f(390, 350)),
+    	sf::Vertex(sf::Vector2f(390, 550))
 	};
 	line4[0].color = sf::Color::Black;
     line4[1].color = sf::Color::Black;
 	sf::Vertex line5[] =
 	{
-    	sf::Vertex(sf::Vector2f(200, 350)),
-    	sf::Vertex(sf::Vector2f(200, 550))
+    	sf::Vertex(sf::Vector2f(270, 350)),
+    	sf::Vertex(sf::Vector2f(270, 550))
 	};
 	line5[0].color = sf::Color::Black;
     line5[1].color = sf::Color::Black;
+    sf::Vertex line6[] =
+	{
+    	sf::Vertex(sf::Vector2f(150, 350)),
+    	sf::Vertex(sf::Vector2f(150, 550))
+	};
+	line6[0].color = sf::Color::Black;
+    line6[1].color = sf::Color::Black;
     string s21 = "тип заявки";
-	string s22 = "время заселения";
+	string s22 = "время заселен.";
 	string s23 = "время выселения";
+    string s24 = "комфорт";
     text39.setString(sf::String::fromUtf8(s21.begin(), s21.end()));
 	text40.setString(sf::String::fromUtf8(s22.begin(), s22.end()));
 	text41.setString(sf::String::fromUtf8(s23.begin(), s23.end()));
-    set_param_to_text(text39, font, 70, 347, 16, sf::Color::Black);
-	set_param_to_text(text40, font, 215, 347, 16, sf::Color::Black);
-	set_param_to_text(text41, font, 365, 347, 16, sf::Color::Black);
+    text42.setString(sf::String::fromUtf8(s24.begin(), s24.end()));
+    set_param_to_text(text39, font, 50, 355, 16, sf::Color::Black);
+	set_param_to_text(text40, font, 275, 355, 16, sf::Color::Black);
+	set_param_to_text(text41, font, 395, 355, 16, sf::Color::Black);
+    set_param_to_text(text42, font, 170, 355, 16, sf::Color::Black);
 
     TextureExitButton.loadFromFile("exit.png");
     TextureOneStepButton.loadFromFile("one_step.png");
@@ -716,11 +759,46 @@ int main()
 		text38.setString(sf::String::fromUtf8(r20.begin(), r20.end()));
 		set_param_to_text(text38, font, 415, 253, 16, sf::Color::Black);
 
+        vector<book_request> vec_b = exp.get_vec_of_book_requests();
+        vector<vector <sf::Text> > vec_t;
+        for (auto g: vec_b){
+            vector <sf::Text> b;
+            type_of_req a1 = g.get_type();
+            comfort a2 = g.get_comfort();
+            my_time a3 = g.get_time1();
+            my_time a4 = g.get_time2();
+            sf::Text text_1, text_2, text_3, text_4;
+            string r_1 = type_of_req_to_string(a1);
+            string r_2 = comfort_to_string1(a2);
+            string r_3 = time_to_string(a3);
+            string r_4 = time_to_string(a4);
+            text_1.setString(sf::String::fromUtf8(r_1.begin(), r_1.end()));
+            text_2.setString(sf::String::fromUtf8(r_2.begin(), r_2.end()));
+            text_3.setString(sf::String::fromUtf8(r_3.begin(), r_3.end()));
+            text_4.setString(sf::String::fromUtf8(r_4.begin(), r_4.end()));
+            b.push_back(text_1);
+            b.push_back(text_2);
+            b.push_back(text_3);
+            b.push_back(text_4);
+            vec_t.push_back(b);
+        }
         window.clear(sf::Color(220, 220, 220, 255));
         window.draw(ExitButton);
         if (f){
             window.draw(OneStepButton);
             window.draw(AllStepsButton);
+        }
+        int i = 380;
+        for (auto g: vec_t){
+            set_param_to_text(g[0], font, 40, i, 16, sf::Color::Black);
+            set_param_to_text(g[1], font, 160, i, 16, sf::Color::Black);
+            set_param_to_text(g[2], font, 290, i, 16, sf::Color::Black);
+            set_param_to_text(g[3], font, 410, i, 16, sf::Color::Black);
+            i += 20;
+            window.draw(g[0]);
+		    window.draw(g[1]);
+		    window.draw(g[2]);
+		    window.draw(g[3]);
         }
         window.draw(text1);
 		window.draw(text2);
@@ -763,12 +841,14 @@ int main()
 		window.draw(text39);
 		window.draw(text40);
 		window.draw(text41);
+        window.draw(text42);
 		window.draw(line, 2, sf::Lines);
 		window.draw(line1, 2, sf::Lines);
 		window.draw(line2, 2, sf::Lines);
 		window.draw(line3, 2, sf::Lines);
 		window.draw(line4, 2, sf::Lines);
 		window.draw(line5, 2, sf::Lines);
+        window.draw(line6, 2, sf::Lines);
         window.display();
     }
 	
