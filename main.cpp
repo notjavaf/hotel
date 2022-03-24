@@ -50,6 +50,7 @@ class hotel{
     map <comfort, int> num_of_completed_requests_by_rooms;
     map <comfort, vector <pair <vector <pair <my_time, my_time> >, room> > > rooms;
 public:
+	hotel();
     hotel(map <comfort, int> a);
     void book(comfort, my_time, my_time);
     void update_info(my_time time_);
@@ -82,6 +83,7 @@ class experiment{
     int K;
     int random_variable;
 public:
+	experiment();
     experiment(int M_, int K_, map <comfort, int> a);
     my_time get_cur_time() const;
     void complete_one_step();
@@ -374,6 +376,15 @@ hotel::hotel(map <comfort, int> a){
     }
 }
 
+hotel::hotel(){
+    cur_revenue = 0;
+    num_of_completed_requests = 0;
+    num_of_unfulfilled_requests = 0;
+    for (int i = 1; i < 6; i++){
+        num_of_completed_requests_by_rooms[get_comf(i)] = 0;
+    }
+}
+
 int hotel::get_num_of_completed_requests() const{
     return num_of_completed_requests;
 }
@@ -428,6 +439,11 @@ experiment::experiment(int M_, int K_, map <comfort, int> a):
     K(K_),
     cur_time(my_time(0, 0)),
     random_variable(K_ / 6)
+    {}
+
+experiment::experiment():
+    vec({}),
+    cur_time(my_time(0, 0))
     {}
 
 my_time experiment::get_cur_time() const{
@@ -516,6 +532,7 @@ string type_of_req_to_string(type_of_req a){
         return "заселение";
 }
 
+
 int main()
 {
     srand(time(0));
@@ -525,7 +542,7 @@ int main()
                             {comfort::two_seat, 5},
                             {comfort::one_seat, 5}};
     int M = 10, K = 25;
-    bool f = true;
+    bool f = false, start_pr = true;
     experiment exp(M, K, a);
     setlocale(LC_CTYPE, "rus");
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hotel");
@@ -569,7 +586,7 @@ int main()
 	line[0].color = sf::Color::Black;
     line[1].color = sf::Color::Black;
 	sf::Vertex line1[] =
-	{
+    {
     	sf::Vertex(sf::Vector2f(350, 20)),
     	sf::Vertex(sf::Vector2f(350, 300))
 	};
@@ -657,15 +674,62 @@ int main()
 	set_param_to_text(text41, font, 395, 355, 16, sf::Color::Black);
     set_param_to_text(text42, font, 170, 355, 16, sf::Color::Black);
 
+	sf::RectangleShape f1(sf::Vector2f(100, 20));
+	sf::RectangleShape f2(sf::Vector2f(100, 20));
+	sf::RectangleShape f3(sf::Vector2f(100, 20));
+	sf::RectangleShape f4(sf::Vector2f(100, 20));
+	sf::RectangleShape f5(sf::Vector2f(100, 20));
+	sf::RectangleShape f6(sf::Vector2f(100, 20));
+	f1.setPosition(250, 150);
+	f2.setPosition(250, 200);
+	f3.setPosition(250, 250);
+	f4.setPosition(250, 300);
+	f5.setPosition(250, 350);
+	f6.setPosition(250, 400);
+    set_param_to_text(text43, font, 252, 152, 16, sf::Color::Black);
+	set_param_to_text(text44, font, 252, 202, 16, sf::Color::Black);
+	set_param_to_text(text45, font, 252, 252, 16, sf::Color::Black);
+    set_param_to_text(text46, font, 252, 302, 16, sf::Color::Black);
+    set_param_to_text(text47, font, 252, 352, 16, sf::Color::Black);
+	set_param_to_text(text48, font, 252, 402, 16, sf::Color::Black);
+    string s43, s44, s45, s46, s47, s48;
+	int inp = 0;
+
+	string s49 = "люкс";
+	string s50 = "полулюкс";
+	string s51 = "двухместные с";
+	string s52 = "раскладным диваном";
+	string s53 = "простые двухместные";
+	string s54 = "одноместные";
+	string s55 = "число дней моделир.";
+	text49.setString(sf::String::fromUtf8(s49.begin(), s49.end()));
+	text50.setString(sf::String::fromUtf8(s50.begin(), s50.end()));
+	text51.setString(sf::String::fromUtf8(s51.begin(), s51.end()));
+	text52.setString(sf::String::fromUtf8(s52.begin(), s52.end()));
+	text53.setString(sf::String::fromUtf8(s53.begin(), s53.end()));
+	text54.setString(sf::String::fromUtf8(s54.begin(), s54.end()));
+	text55.setString(sf::String::fromUtf8(s55.begin(), s55.end()));
+	set_param_to_text(text49, font, 201, 202, 16, sf::Color::Black);
+	set_param_to_text(text50, font, 167, 252, 16, sf::Color::Black);
+	set_param_to_text(text51, font, 127, 292, 16, sf::Color::Black);
+	set_param_to_text(text52, font, 83, 312, 16, sf::Color::Black);
+	set_param_to_text(text53, font, 75, 352, 16, sf::Color::Black);
+	set_param_to_text(text54, font, 140, 402, 16, sf::Color::Black);
+	set_param_to_text(text55, font, 83, 152, 16, sf::Color::Black);
+	string s56 = "Вводите";
+	text56.setString(sf::String::fromUtf8(s56.begin(), s56.end()));
+	set_param_to_text(text56, font, 83, 152, 16, sf::Color::Black);
+
     TextureExitButton.loadFromFile("exit.png");
     TextureOneStepButton.loadFromFile("one_step.png");
     TextureAllStepsButton.loadFromFile("n_steps.png");
     sf::Sprite ExitButton(TextureExitButton), 
-               OneStepButton(TextureOneStepButton), 
-               AllStepsButton(TextureAllStepsButton);
+    OneStepButton(TextureOneStepButton), 
+    AllStepsButton(TextureAllStepsButton);
     ExitButton.setPosition(130, 560);
     OneStepButton.setPosition(330, 560);
-    AllStepsButton.setPosition(530, 560);
+    AllStepsButton.setPosition(530, 560);   
+
     while (window.isOpen()){
         sf::Event event;
         while (window.pollEvent(event)){
@@ -692,7 +756,88 @@ int main()
                         }
                     }
                 }
-            }
+            } else if (event.type == sf::Event::KeyReleased){
+                if (event.key.code == sf::Keyboard::Return){
+                	inp++;
+                }
+				if (inp == 6){
+					start_pr = false;
+					f = true;
+					M = stoi(s43);
+					a = {{comfort::lux, stoi(s44)},
+                         {comfort::semi_lux, stoi(s45)},
+                         {comfort::two_seat_sofa, stoi(s46)},
+                         {comfort::two_seat, stoi(s47)},
+                         {comfort::one_seat, stoi(s48)}};
+					K = stoi(s44) + 
+						stoi(s45) +
+						stoi(s46) +
+						stoi(s47) +
+						stoi(s48);
+					exp = experiment(M, K, a);
+				}
+                else {
+                    sf::Keyboard::Key keycode = event.key.code;
+					if (keycode == sf::Keyboard::BackSpace){
+						switch (inp){
+							case 0:
+								if (s43.size() > 0)
+									s43 = s43.substr(0, s43.size() - 1);
+								break;
+							case 1:
+								if (s44.size() > 0)
+									s44 = s44.substr(0, s44.size() - 1);
+								break;
+							case 2:
+								if (s45.size() > 0)
+									s45 = s45.substr(0, s45.size() - 1);
+								break;
+							case 3:
+								if (s46.size() > 0)
+									s46 = s46.substr(0, s46.size() - 1);
+								break;
+							case 4:
+								if (s47.size() > 0)
+									s47 = s47.substr(0, s47.size() - 1);
+								break;
+							default:
+								if (s48.size() > 0)
+									s48 = s48.substr(0, s48.size() - 1);
+								break;
+						}
+					}
+                    if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s43.size() < 10 && inp == 0){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s43.push_back(chr);
+                    }
+                    text43.setString(sf::String::fromUtf8(s43.begin(), s43.end()));
+					if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s44.size() < 10 && inp == 1){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s44.push_back(chr);
+                    }
+                    text44.setString(sf::String::fromUtf8(s44.begin(), s44.end()));
+					if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s45.size() < 10 && inp == 2){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s45.push_back(chr);
+                    }
+                    text45.setString(sf::String::fromUtf8(s45.begin(), s45.end()));
+					if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s46.size() < 10 && inp == 3){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s46.push_back(chr);
+                    }
+                    text46.setString(sf::String::fromUtf8(s46.begin(), s46.end()));
+					if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s47.size() < 10 && inp == 4){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s47.push_back(chr);
+                    }
+                    text47.setString(sf::String::fromUtf8(s47.begin(), s47.end()));
+					if (keycode >= sf::Keyboard::Num0 && keycode <= sf::Keyboard::Num9 && s48.size() < 10 && inp == 5){
+                        char chr = static_cast<char>(keycode - sf::Keyboard::Num0 + '0');
+                        s48.push_back(chr);
+                    }
+                    text48.setString(sf::String::fromUtf8(s48.begin(), s48.end()));
+                }
+            } 
         }   
 		string s_cur_time = time_to_string(exp.get_cur_time());
 		text2.setString(sf::String::fromUtf8(s_cur_time.begin(), s_cur_time.end()));
@@ -783,12 +928,37 @@ int main()
             vec_t.push_back(b);
         }
         window.clear(sf::Color(220, 220, 220, 255));
-        window.draw(ExitButton);
+		window.setFramerateLimit(60);
+        int i = 380;
+		window.draw(ExitButton);
+        if (start_pr){
+			window.draw(f1);
+			window.draw(f2);
+			window.draw(f3);
+			window.draw(f4);
+			window.draw(f5);
+			window.draw(f6);
+            window.draw(text43);
+			window.draw(text44);
+			window.draw(text45);
+            window.draw(text46);
+			window.draw(text47);
+			window.draw(text48);
+			window.draw(text49);
+			window.draw(text50);
+			window.draw(text51);
+			window.draw(text52);
+			window.draw(text53);
+        	window.draw(text54);
+			window.draw(text55);
+			window.draw(text56);
+            //start_pr = false;
+        }
+        else {
         if (f){
             window.draw(OneStepButton);
             window.draw(AllStepsButton);
         }
-        int i = 380;
         for (auto g: vec_t){
             set_param_to_text(g[0], font, 40, i, 16, sf::Color::Black);
             set_param_to_text(g[1], font, 160, i, 16, sf::Color::Black);
@@ -849,6 +1019,7 @@ int main()
 		window.draw(line4, 2, sf::Lines);
 		window.draw(line5, 2, sf::Lines);
         window.draw(line6, 2, sf::Lines);
+        }
         window.display();
     }
 	
