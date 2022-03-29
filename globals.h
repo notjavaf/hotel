@@ -42,6 +42,8 @@ comfort get_comf(int i);
 
 bool operator< (my_time t1, my_time t2);
 
+bool operator<= (my_time t1, my_time t2);
+
 my_time& operator++ (my_time& t1);
 
 bool operator== (my_time t1, my_time t2);
@@ -78,3 +80,5 @@ void print_objects (sf::RenderWindow& w, const vector<sf::Text> &a);
 void print_objects (sf::RenderWindow& w, const vector<sf::RectangleShape> &a);
 
 void print_objects1 (sf::RenderWindow& w, const vector<sf::Vertex *> &a);
+
+int my_stoi(const string& s);

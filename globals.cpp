@@ -78,6 +78,13 @@ bool operator< (my_time t1, my_time t2){
     return false;
 }
 
+bool operator<= (my_time t1, my_time t2){
+    if (t1.day <= t2.day)
+    	if (t1.hour <= t2.hour)
+        	return true;
+    return false;
+}
+
 my_time& operator++ (my_time& t1){
     if (t1.hour > 17){
         t1.day++;
@@ -133,7 +140,7 @@ comfort get_prev_comfort(comfort a){
 bool cross_time_interval(const vector <pair <my_time, my_time> >& a, 
                          my_time st_t2, my_time f_t2){
     for (const auto& g: a)
-        if (g.first < st_t2 && st_t2 < g.second || g.first < f_t2 && f_t2 < g.second)
+        if (g.first <= st_t2 && st_t2 < g.second || g.first <= f_t2 && f_t2 < g.second)
             return true;
     return false; 
 }
@@ -201,4 +208,11 @@ void print_objects1 (sf::RenderWindow& w, const vector<sf::Vertex *> &a){
 	for (const auto& g: a){
 		w.draw(g, 2, sf::Lines);
 	}
+}
+
+int my_stoi(const string& s){
+	if (s.size() == 0)
+		return 5;
+	else
+		return stoi(s);
 }

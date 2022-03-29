@@ -4,8 +4,12 @@
 #include "book_request.h"
 #include "experiment.h"
 
-int experiment::get_num_of_completed_requests() const{
-    return my_hotel.get_num_of_completed_requests();
+int experiment::get_num_of_completed_requests_book() const{
+    return my_hotel.get_num_of_completed_requests_book();
+}
+
+int experiment::get_num_of_completed_requests_check_in() const{
+    return my_hotel.get_num_of_completed_requests_check_in();
 }
     
 int experiment::get_num_of_unfulfilled_requests() const{

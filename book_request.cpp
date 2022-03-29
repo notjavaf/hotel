@@ -26,5 +26,5 @@ type_of_req book_request::get_type() const{
 }
 
 void book_request::form(hotel& my_hotel){
-    my_hotel.book(get_comfort(), get_time1(), get_time2());
+    my_hotel.book(get_comfort(), get_time1(), get_time2(), get_type());
 }
