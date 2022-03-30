@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <cstdlib>
+#include <fstream>
+#include <iomanip>
 #include <ctime>
 #include <random>
 #include <locale>

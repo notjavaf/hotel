@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <random>
+#include <fstream>
+#include <iomanip>
 #include <locale>
 #include <SFML/System/String.hpp>
 #include <SFML/System/Utf.hpp>
@@ -18,13 +20,14 @@
 using namespace std;
 
 int main()
-{
+{	
     srand(time(0));
     map <comfort, int> a = {{comfort::lux, 5},
                             {comfort::semi_lux, 5},
                             {comfort::two_seat_sofa, 5},
                             {comfort::two_seat, 5},
                             {comfort::one_seat, 5}};
+	vector<int> day_stat;
     int M = 10, K = 25, inp = 0;
     bool f = false, start_pr = true;
     experiment exp(M, K, a);
@@ -327,6 +330,7 @@ int main()
             string r_2 = comfort_to_string1(a2);
             string r_3 = time_to_string(a3);
             string r_4 = time_to_string(a4);
+			//fout << r_1 << " в " << r_2 << " с " << r_3 << " до " << r_4 << endl;
             text_1.setString(sf::String::fromUtf8(r_1.begin(), r_1.end()));
             text_2.setString(sf::String::fromUtf8(r_2.begin(), r_2.end()));
             text_3.setString(sf::String::fromUtf8(r_3.begin(), r_3.end()));

@@ -1,6 +1,7 @@
 #pragma once
 
 class experiment{
+    ofstream fout;
     vector<book_request> vec;
     hotel my_hotel;
     my_time cur_time;

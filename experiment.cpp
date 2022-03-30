@@ -29,6 +29,7 @@ vector <book_request> experiment::get_vec_of_book_requests() const{
 }
 
 experiment::experiment(int M_, int K_, map <comfort, int> a):
+    fout("request_log.txt", ios_base::out | ios_base::trunc),
     vec({}),
     my_hotel(a),
     M(M_),
@@ -60,6 +61,11 @@ void experiment::complete_one_step(){
                          cur_time + rand_days_1);
         vec.push_back(req);
         req.form(my_hotel);
+	string r_1 = type_of_req_to_string(type_of_req::check_in);
+        string r_2 = comfort_to_string1(get_comf(rand_comf_1));
+        string r_3 = time_to_string(cur_time);
+        string r_4 = time_to_string(cur_time + rand_days_1);
+	fout << r_1 << " в " << r_2 << " с " << r_3 << " до " << r_4 << endl;
     }
     int rand_book_2 = rand() % random_variable;
     for (int i = 0; i < rand_book_2; i++){
@@ -72,6 +78,11 @@ void experiment::complete_one_step(){
                          cur_time + rand_days_1 + rand_days_2);
         vec.push_back(req);
         req.form(my_hotel);
+	string r_1 = type_of_req_to_string(type_of_req::book);
+        string r_2 = comfort_to_string1(get_comf(rand_comf_1));
+        string r_3 = time_to_string(cur_time + rand_days_1);
+        string r_4 = time_to_string(cur_time + rand_days_1 + rand_days_2);
+	fout << r_1 << " в " << r_2 << " с " << r_3 << " до " << r_4 << endl;
     }
     my_hotel.update_info(cur_time);
     ///////////////////////
