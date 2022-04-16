@@ -6,7 +6,8 @@ class hotel{
 	int num_of_completed_requests_check_in;
     int num_of_unfulfilled_requests;
     map <comfort, int> num_of_completed_requests_by_rooms;
-    map <comfort, vector <pair <vector <pair <my_time, my_time> >, room> > > rooms;
+    map <comfort, vector <room> > rooms;
+	void change_cur_revenue(int s, my_time time2, my_time time1, bool f);
 public:
 	hotel();
     hotel(map <comfort, int> a);

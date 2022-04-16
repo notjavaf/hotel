@@ -29,7 +29,7 @@ vector <book_request> experiment::get_vec_of_book_requests() const{
 }
 
 experiment::experiment(int M_, int K_, map <comfort, int> a):
-    fout("request_log.txt", ios_base::out | ios_base::trunc),
+    fout("request_log.csv", ios_base::out | ios_base::trunc),
     vec({}),
     my_hotel(a),
     M(M_),
@@ -53,36 +53,11 @@ void experiment::complete_one_step(){
     my_hotel.update_info(cur_time);
     int rand_book_1 = rand() % random_variable;
     for (int i = 0; i < rand_book_1; i++){
-        int rand_comf_1 = rand() % 5 + 1;
-        int rand_days_1 = rand() % 3 + 1;
-        book_request req(type_of_req::check_in,
-                        get_comf(rand_comf_1), 
-                         cur_time, 
-                         cur_time + rand_days_1);
-        vec.push_back(req);
-        req.form(my_hotel);
-	string r_1 = type_of_req_to_string(type_of_req::check_in);
-        string r_2 = comfort_to_string1(get_comf(rand_comf_1));
-        string r_3 = time_to_string(cur_time);
-        string r_4 = time_to_string(cur_time + rand_days_1);
-	fout << r_1 << " в " << r_2 << " с " << r_3 << " до " << r_4 << endl;
+        confirm_req(false);
     }
     int rand_book_2 = rand() % random_variable;
     for (int i = 0; i < rand_book_2; i++){
-        int rand_comf_1 = rand() % 5 + 1;
-        int rand_days_1 = rand() % 3 + 1;
-        int rand_days_2 = rand() % 3 + 1;
-        book_request req(type_of_req::book,
-                         get_comf(rand_comf_1), 
-                         cur_time + rand_days_1, 
-                         cur_time + rand_days_1 + rand_days_2);
-        vec.push_back(req);
-        req.form(my_hotel);
-	string r_1 = type_of_req_to_string(type_of_req::book);
-        string r_2 = comfort_to_string1(get_comf(rand_comf_1));
-        string r_3 = time_to_string(cur_time + rand_days_1);
-        string r_4 = time_to_string(cur_time + rand_days_1 + rand_days_2);
-	fout << r_1 << " в " << r_2 << " с " << r_3 << " до " << r_4 << endl;
+        confirm_req(true);
     }
     my_hotel.update_info(cur_time);
     ///////////////////////
@@ -99,4 +74,35 @@ map <comfort, pair<int, int>> experiment::get_stats() const{
     return my_hotel.get_stats(cur_time);
 }
 
+void experiment::confirm_req(bool f){
+	int rand_comf_1 = rand() % 5 + 1;
+    int rand_days_1 = rand() % 3 + 1;
+	string r_1, r_2, r_3, r_4;
+	if (f){
+		int rand_days_2 = rand() % 3 + 1;
+		book_request req(type_of_req::book,
+                         get_comf(rand_comf_1), 
+                         cur_time + rand_days_1, 
+                         cur_time + rand_days_1 + rand_days_2);
+		vec.push_back(req);
+        req.form(my_hotel);
+		r_1 = type_of_req_to_string(type_of_req::book);
+        r_2 = comfort_to_string1(get_comf(rand_comf_1));
+        r_3 = time_to_string(cur_time + rand_days_1);
+        r_4 = time_to_string(cur_time + rand_days_1 + rand_days_2);
+	}
+	else{
+    	book_request req(type_of_req::check_in,
+                         get_comf(rand_comf_1), 
+                         cur_time, 
+                         cur_time + rand_days_1);
+        vec.push_back(req);
+        req.form(my_hotel);
+		r_1 = type_of_req_to_string(type_of_req::check_in);
+        r_2 = comfort_to_string1(get_comf(rand_comf_1));
+        r_3 = time_to_string(cur_time);
+        r_4 = time_to_string(cur_time + rand_days_1);
+	}
+	fout << r_1 << "," << r_2 << "," << r_3 << "," << r_4 << endl;	
+}
 

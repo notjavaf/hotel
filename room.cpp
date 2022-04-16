@@ -22,7 +22,8 @@ void room::set_free(){
 
 room::room(comfort comf_, int cost_): comf(comf_),  
                                     cost(cost_),
-                                    free(true){}
+                                    free(true),
+									timetable({}){}
 
 int room::take_a_room(){
         free = false;
@@ -31,4 +32,12 @@ int room::take_a_room(){
 
 bool room::check_free() const{
         return free;
+}
+
+vector <pair <my_time, my_time> > room::get_timetable(){
+	return timetable;
+}
+
+void room::add_time_interval(pair<my_time, my_time> t_time){
+	timetable.push_back(t_time);
 }

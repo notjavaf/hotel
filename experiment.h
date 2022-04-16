@@ -21,4 +21,5 @@ public:
 	map <comfort, int> get_num_of_completed_requests_by_rooms();
 	int get_cur_revenue() const;
 	map <comfort, pair<int, int>> get_stats() const;
+	void confirm_req(bool f);
 };

@@ -23,6 +23,8 @@ enum comfort {
 			  one_seat = 100
 			 };
     
+const int num_of_types = 5;
+const int hours_in_day = 24;
 enum type_of_req {
             book,
             check_in
